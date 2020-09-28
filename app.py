@@ -91,11 +91,11 @@ try:
             "INSERT INTO public.twitter (tweet_content, tweet_id, hashtag, datetime) VALUES (%s,%s,%s,%s)",
             twitter_row)
 
+    cur.close()
+    conn.close()
+
 except psycopg2.OperationalError as e:
     print("Unable to connect to the database!".format(e))
     exit(1)
-
-cur.close()
-conn.close()
 
 print("Rows are updated.")
