@@ -99,3 +99,5 @@ except psycopg2.OperationalError as e:
     exit(1)
 
 print("Rows are updated.")
+
+exit(0)
