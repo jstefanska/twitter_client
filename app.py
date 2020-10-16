@@ -55,7 +55,7 @@ else:
 try:
 
     # select posted hashtags from hashtags table in DB
-    conn = psycopg2.connect(host='localhost', port=5432, dbname='postgres', user='postgres_user',
+    conn = psycopg2.connect(host='postgresql-95-centos7', port=5432, dbname='postgres', user='postgres_user',
                             password=db_pass)
     conn.autocommit = True
     cur = conn.cursor()
