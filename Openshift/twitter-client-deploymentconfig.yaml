@@ -1,0 +1,109 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+  creationTimestamp: '2020-10-17T14:45:15Z'
+  generation: 10
+  labels:
+    app: twitter-client
+  name: twitter-client
+  namespace: twitter-project
+  resourceVersion: '97818'
+  selfLink: >-
+    /apis/apps.openshift.io/v1/namespaces/twitter-project/deploymentconfigs/twitter-client
+  uid: 5e382e85-1087-11eb-a0f1-00155d380107
+spec:
+  replicas: 0
+  selector:
+    deploymentconfig: twitter-client
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: twitter-client
+        deploymentconfig: twitter-client
+    spec:
+      containers:
+        - env:
+            - name: API_KEY
+              value: 
+            - name: API_SECRET
+              value: 
+            - name: DB_PASS
+              value: 
+            - name: DB_HOST
+              value: 
+            - name: DB_NAME
+              value: 
+            - name: DB_USER
+              value: 
+            - name: DB_PORT
+              value: 
+          image: >-
+            172.30.1.1:5000/twitter-project/twitter-client@sha256:6259b84f190d0d090de9d26f0c2b4517c039ef0aeaea69801a2632a76cc95ab6
+          imagePullPolicy: Always
+          name: twitter-client
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - twitter-client
+        from:
+          kind: ImageStreamTag
+          name: 'twitter-client:latest'
+          namespace: twitter-project
+        lastTriggeredImage: >-
+          172.30.1.1:5000/twitter-project/twitter-client@sha256:6259b84f190d0d090de9d26f0c2b4517c039ef0aeaea69801a2632a76cc95ab6
+      type: ImageChange
+    - type: ConfigChange
+status:
+  availableReplicas: 0
+  conditions:
+    - lastTransitionTime: '2020-10-17T16:35:43Z'
+      lastUpdateTime: '2020-10-17T16:35:48Z'
+      message: replication controller "twitter-client-6" successfully rolled out
+      reason: NewReplicationControllerAvailable
+      status: 'True'
+      type: Progressing
+    - lastTransitionTime: '2020-10-17T16:41:27Z'
+      lastUpdateTime: '2020-10-17T16:41:27Z'
+      message: Deployment config does not have minimum availability.
+      status: 'False'
+      type: Available
+  details:
+    causes:
+      - imageTrigger:
+          from:
+            kind: DockerImage
+            name: >-
+              172.30.1.1:5000/twitter-project/twitter-client@sha256:6259b84f190d0d090de9d26f0c2b4517c039ef0aeaea69801a2632a76cc95ab6
+        type: ImageChange
+    message: image change
+  latestVersion: 6
+  observedGeneration: 10
+  replicas: 0
+  unavailableReplicas: 0
+  updatedReplicas: 0
