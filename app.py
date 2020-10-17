@@ -2,7 +2,7 @@ import base64
 import requests
 import psycopg2
 import os
-import datetime
+from datetime import datetime
 
 # generate bearer token from api_key and api_secret (provided in Twitter API project)
 # api_key and api_secret should be set as environment variable for security
