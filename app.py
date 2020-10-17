@@ -97,11 +97,11 @@ try:
 
         tweet_data = search_resp.json()
 
-        time = datetime.now()
+        datetime = datetime.now()
 
         # insert requested Tweets to DB
 
-        twitter_row = [(status['text'], status['id'], x, time) for status in tweet_data['statuses']]
+        twitter_row = [(status['text'], status['id'], x, datetime) for status in tweet_data['statuses']]
 
         cur.executemany(
             "INSERT INTO public.twitter (tweet_content, tweet_id, hashtag, datetime) VALUES (%s,%s,%s,%s)",
