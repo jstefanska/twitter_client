@@ -2,7 +2,7 @@ import base64
 import requests
 import psycopg2
 import os
-from datetime import datetime
+import datetime
 
 # generate bearer token from api_key and api_secret (provided in Twitter API project)
 # api_key and api_secret should be set as environment variable for security
@@ -97,11 +97,11 @@ try:
 
         tweet_data = search_resp.json()
 
-        datetime = datetime.now()
+        time = datetime.now()
 
         # insert requested Tweets to DB
 
-        twitter_row = [(status['text'], status['id'], x, datetime) for status in tweet_data['statuses']]
+        twitter_row = [(status['text'], status['id'], x, time) for status in tweet_data['statuses']]
 
         cur.executemany(
             "INSERT INTO public.twitter (tweet_content, tweet_id, hashtag, datetime) VALUES (%s,%s,%s,%s)",
@@ -115,5 +115,5 @@ except psycopg2.OperationalError as e:
     exit(1)
 
 print("Rows are updated.")
-
 exit(0)
+
