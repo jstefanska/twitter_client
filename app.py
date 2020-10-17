@@ -49,13 +49,29 @@ else:
 if 'DB_PASS' not in os.environ:
     print("'DB_PASS' environment variable does not exist")
     exit(1)
+elif 'DB_HOST' not in os.environ:
+    print("'DB_HOST' environment variable does not exist")
+    exit(1)
+elif 'DB_NAME' not in os.environ:
+    print("'DB_NAME' environment variable does not exist")
+    exit(1)
+elif 'DB_USER' not in os.environ:
+    print("'DB_USER' environment variable does not exist")
+    exit(1)
+elif 'DB_PORT' not in os.environ:
+    print("'DB_PORT' environment variable does not exist")
+    exit(1)
 else:
     db_pass = os.getenv('DB_PASS')
+    db_host = os.getenv('DB_HOST')
+    db_name = os.getenv('DB_NAME')
+    db_user = os.getenv('DB_USER')
+    db_port = os.getenv('DB_PORT')
 
 try:
 
     # select posted hashtags from hashtags table in DB
-    conn = psycopg2.connect(host='postgresql-95-centos7', port=5432, dbname='postgres', user='postgres_user',
+    conn = psycopg2.connect(host=db_host, port=db_port, dbname=db_name, user=db_user,
                             password=db_pass)
     conn.autocommit = True
     cur = conn.cursor()
