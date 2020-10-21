@@ -11,3 +11,4 @@ requests==2.24.0
 setuptools==50.3.0
 urllib3==1.25.10
 wheel==0.35.1
+redis~=3.5.3
