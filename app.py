@@ -53,20 +53,12 @@ else:
 # elif 'DB_HOST' not in os.environ:
 #     print("'DB_HOST' environment variable does not exist")
 #     exit(1)
-# elif 'DB_NAME' not in os.environ:
-#     print("'DB_NAME' environment variable does not exist")
-#     exit(1)
-# elif 'DB_USER' not in os.environ:
-#     print("'DB_USER' environment variable does not exist")
-#     exit(1)
 # elif 'DB_PORT' not in os.environ:
 #     print("'DB_PORT' environment variable does not exist")
 #     exit(1)
 # else:
 #     db_pass = os.getenv('DB_PASS')
 #     db_host = os.getenv('DB_HOST')
-#     db_name = os.getenv('DB_NAME')
-#     db_user = os.getenv('DB_USER')
 #     db_port = os.getenv('DB_PORT')
 
 class Tweet:
@@ -89,31 +81,36 @@ try:
 
     hashtag = r.smembers('hashtags')
 
-    for x in hashtag:
-        search_headers = {
-            'Authorization': 'Bearer {}'.format(access_token)
-        }
+    if hashtag == set():
+        print("No hashtags in the database.")
+        exit(1)
 
-        search_params = {
-            'q': ('#%s' % x),
-            'result_type': 'recent',
-            'count': 10
-        }
+    else:
+        for x in hashtag:
+            search_headers = {
+                'Authorization': 'Bearer {}'.format(access_token)
+            }
 
-        search_url = 'https://api.twitter.com/1.1/search/tweets.json'
+            search_params = {
+                'q': ('#%s' % x),
+                'result_type': 'recent',
+                'count': 10
+            }
 
-        search_resp = requests.get(search_url, headers=search_headers, params=search_params)
+            search_url = 'https://api.twitter.com/1.1/search/tweets.json'
 
-        tweet_data = search_resp.json()
+            search_resp = requests.get(search_url, headers=search_headers, params=search_params)
 
-        for status in tweet_data['statuses']:
-            tweet = Tweet(status['id_str'], status['text'])
-            tweet_json = str(json.dumps(tweet.__dict__))
-            r.lpush(x, tweet_json)
+            tweet_data = search_resp.json()
 
-    r.close()
-    print('DB updated with new tweets.')
-    exit(0)
+            for status in tweet_data['statuses']:
+                tweet = Tweet(status['id_str'], status['text'])
+                tweet_json = str(json.dumps(tweet.__dict__))
+                r.lpush(x, tweet_json)
+
+        r.close()
+        print('DB updated with new tweets.')
+        exit(0)
 
 except Exception as ex:
     print('Error:', ex)
