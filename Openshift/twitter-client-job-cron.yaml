@@ -20,10 +20,6 @@ spec:
               value: 
             - name: DB_HOST
               value: 
-            - name: DB_NAME
-              value: 
-            - name: DB_USER
-              value: 
             - name: DB_PORT
               value: 
             name: twitter-client
