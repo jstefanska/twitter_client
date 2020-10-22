@@ -44,22 +44,21 @@ else:
     print("Bearer token authorization failed. Check your API key and API secret.")
     exit(1)
 
-
 # request 10 recent Tweets
-#
-# if 'DB_PASS' not in os.environ:
-#     print("'DB_PASS' environment variable does not exist")
-#     exit(1)
-# elif 'DB_HOST' not in os.environ:
-#     print("'DB_HOST' environment variable does not exist")
-#     exit(1)
-# elif 'DB_PORT' not in os.environ:
-#     print("'DB_PORT' environment variable does not exist")
-#     exit(1)
-# else:
-#     db_pass = os.getenv('DB_PASS')
-#     db_host = os.getenv('DB_HOST')
-#     db_port = os.getenv('DB_PORT')
+
+if 'DB_PASS' not in os.environ:
+    print("'DB_PASS' environment variable does not exist")
+    exit(1)
+elif 'DB_HOST' not in os.environ:
+    print("'DB_HOST' environment variable does not exist")
+    exit(1)
+elif 'DB_PORT' not in os.environ:
+    print("'DB_PORT' environment variable does not exist")
+    exit(1)
+else:
+    db_pass = os.getenv('DB_PASS')
+    db_host = os.getenv('DB_HOST')
+    db_port = os.getenv('DB_PORT')
 
 class Tweet:
     tweet_content = ""
@@ -73,9 +72,9 @@ class Tweet:
 try:
 
     r = redis.StrictRedis(
-        host='localhost',
-        port=6379,
-        password='mysecretpassword',
+        host= db_host,
+        port=db_port,
+        password=db_pass,
         charset="utf-8",
         decode_responses=True)
 
