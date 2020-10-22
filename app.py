@@ -1,8 +1,8 @@
 import base64
-import os
-import redis
 import requests
-import json
+import psycopg2
+import os
+from datetime import datetime
 
 # generate bearer token from api_key and api_secret (provided in Twitter API project)
 # api_key and api_secret should be set as environment variable for security
@@ -52,65 +52,67 @@ if 'DB_PASS' not in os.environ:
 elif 'DB_HOST' not in os.environ:
     print("'DB_HOST' environment variable does not exist")
     exit(1)
+elif 'DB_NAME' not in os.environ:
+    print("'DB_NAME' environment variable does not exist")
+    exit(1)
+elif 'DB_USER' not in os.environ:
+    print("'DB_USER' environment variable does not exist")
+    exit(1)
 elif 'DB_PORT' not in os.environ:
     print("'DB_PORT' environment variable does not exist")
     exit(1)
 else:
     db_pass = os.getenv('DB_PASS')
     db_host = os.getenv('DB_HOST')
+    db_name = os.getenv('DB_NAME')
+    db_user = os.getenv('DB_USER')
     db_port = os.getenv('DB_PORT')
-
-class Tweet:
-    tweet_content = ""
-    tweet_id = ""
-
-    def __init__(self, tweet_id, tweet_content):
-        self.tweet_id = tweet_id
-        self.tweet_content = tweet_content
-
 
 try:
 
-    r = redis.StrictRedis(
-        host= db_host,
-        port=db_port,
-        password=db_pass,
-        charset="utf-8",
-        decode_responses=True)
+    # select posted hashtags from hashtags table in DB
+    conn = psycopg2.connect(host=db_host, port=db_port, dbname=db_name, user=db_user,
+                            password=db_pass)
+    conn.autocommit = True
+    cur = conn.cursor()
 
-    hashtag = r.smembers('hashtags')
+    cur.execute("select hashtag from hashtags")
+    hashtag = cur.fetchall()
 
-    if hashtag == set():
-        print("No hashtags in the database.")
-        exit(1)
+    # request Tweets with each selected hashtag
+    for x in hashtag:
+        search_headers = {
+            'Authorization': 'Bearer {}'.format(access_token)
+        }
 
-    else:
-        for x in hashtag:
-            search_headers = {
-                'Authorization': 'Bearer {}'.format(access_token)
-            }
+        search_params = {
+            'q': ('#%s' % x),
+            'result_type': 'recent',
+            'count': 10
+        }
 
-            search_params = {
-                'q': ('#%s' % x),
-                'result_type': 'recent',
-                'count': 10
-            }
+        search_url = 'https://api.twitter.com/1.1/search/tweets.json'
 
-            search_url = 'https://api.twitter.com/1.1/search/tweets.json'
+        search_resp = requests.get(search_url, headers=search_headers, params=search_params)
 
-            search_resp = requests.get(search_url, headers=search_headers, params=search_params)
+        tweet_data = search_resp.json()
 
-            tweet_data = search_resp.json()
+        datetime = datetime.now()
 
-            for status in tweet_data['statuses']:
-                tweet = Tweet(status['id_str'], status['text'])
-                tweet_json = str(json.dumps(tweet.__dict__))
-                r.lpush(x, tweet_json)
+        # insert requested Tweets to DB
 
-        r.close()
-        print('DB updated with new tweets.')
-        exit(0)
+        twitter_row = [(status['text'], status['id'], x, datetime) for status in tweet_data['statuses']]
 
-except Exception as ex:
-    print('Error:', ex)
-    exit('Failed to connect, terminating.')
+        cur.executemany(
+            "INSERT INTO public.twitter (tweet_content, tweet_id, hashtag, datetime) VALUES (%s,%s,%s,%s)",
+            twitter_row)
+
+    cur.close()
+    conn.close()
+
+except psycopg2.OperationalError as e:
+    print("Unable to connect to the database!".format(e))
+    exit(1)
+
+print("Rows are updated.")
+exit(0)
