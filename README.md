@@ -1,6 +1,6 @@
 # twitter_client
 
-twitter_client is batch application which will get you 10 most recent Tweets using Twitter API with a chosen hashtag. It will get Tweet text and Tweet ID and write it to a Redis database.
+twitter_client is a batch application which will get you 10 most recent Tweets with a chosen hashtag using Twitter API. It will get Tweet text and Tweet ID and write it to a Redis database.
 
 There's Flask API created to use this batch application, by posting chosen hashtags and getting Tweets with it - **https://github.com/jstefanska/flask_api**
 
